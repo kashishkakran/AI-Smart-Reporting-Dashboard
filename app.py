@@ -4,6 +4,9 @@ from datetime import datetime
 import os
 import random
 import openai
+import pandas as pd  
+from io import StringIO
+import requests
 
 # openai key
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -30,6 +33,27 @@ c.execute("""
 """)
 conn.commit()
 
+# load kaggle sample dataset
+st.markdown("### Demo Sales Dataset")
+try:
+    url = "https://raw.githubusercontent.com/kashishkakran/AI-Smart-Reporting-Dashboard/main/sales_data_sample.csv"
+    response = requests.get(url)
+    if response.status_code == 200:
+        sales_data = pd.read_csv(StringIO(response.text))
+        st.dataframe(sales_data.head())
+        # Add a dropdown to select customer from Kaggle data
+        selected_customer = st.selectbox("Select a demo customer", sales_data['Customer'].unique())
+        if selected_customer:
+            demo_row = sales_data[sales_data['Customer'] == selected_customer].iloc[0]
+            demo_industry = demo_row['Region']  # map Region to Industry
+            demo_goals = f"Previous Orders: {demo_row['Product']} x {demo_row['Quantity']}, Total: {demo_row['Total']}"
+    else:
+        st.warning("Unable to load demo dataset.")
+        selected_customer = demo_industry = demo_goals = ""
+except Exception as e:
+    st.warning(f"Error loading demo dataset: {e}")
+    selected_customer = demo_industry = demo_goals = ""
+
 # streamlit app layout
 st.set_page_config(page_title="AI Smart Reporting Dashboard", layout="wide")
 st.title("AI-Powered Smart Reporting Dashboard")
@@ -38,9 +62,9 @@ st.markdown("Generate structured reports for customer success & solutions consul
 # input form
 with st.form("report_form"):
     st.subheader("Enter Customer / Project Details")
-    customer = st.text_input("Customer Name")
-    industry = st.text_input("Industry")
-    goals = st.text_area("Goals / Pain Points")
+    customer = st.text_input("Customer Name", value=selected_customer if selected_customer else "")
+    industry = st.text_input("Industry", value=demo_industry if selected_customer else "")
+    goals = st.text_area("Goals / Pain Points", value=demo_goals if selected_customer else "")
 
     submitted = st.form_submit_button("Generate Report")
 
