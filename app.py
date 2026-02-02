@@ -8,6 +8,11 @@ import pandas as pd
 from io import StringIO
 import requests
 
+# streamlit app layout
+st.set_page_config(page_title="AI Smart Reporting Dashboard", layout="wide")
+st.title("AI-Powered Smart Reporting Dashboard")
+st.markdown("Generate structured reports for customer success & solutions consulting.")
+
 # openai key
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -53,11 +58,6 @@ try:
 except Exception as e:
     st.warning(f"Error loading demo dataset: {e}")
     selected_customer = demo_industry = demo_goals = ""
-
-# streamlit app layout
-st.set_page_config(page_title="AI Smart Reporting Dashboard", layout="wide")
-st.title("AI-Powered Smart Reporting Dashboard")
-st.markdown("Generate structured reports for customer success & solutions consulting.")
 
 # input form
 with st.form("report_form"):
