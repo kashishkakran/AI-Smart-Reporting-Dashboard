@@ -41,17 +41,22 @@ conn.commit()
 # load kaggle sample dataset
 st.markdown("### Demo Sales Dataset")
 try:
-    url = "https://raw.githubusercontent.com/kashishkakran/AI-Smart-Reporting-Dashboard/main/sales_data_sample.csv"
+    url = "https://raw.githubusercontent.com/kashishkakran/AI-Smart-Reporting-Dashboard/main/data/sales_data_sample.csv"
     response = requests.get(url)
     if response.status_code == 200:
         sales_data = pd.read_csv(StringIO(response.text))
+        # Normalize column names to remove whitespace and ensure consistent casing
+        sales_data.columns = [col.strip().upper() for col in sales_data.columns]
+        
         st.dataframe(sales_data.head())
-        # Add a dropdown to select customer from Kaggle data
-        selected_customer = st.selectbox("Select a demo customer", sales_data['Customer'].unique())
+        
+        # adding a dropdown to select customer from Kaggle data
+        selected_customer = st.selectbox("Select a demo customer", sales_data['CUSTOMERNAME'].unique())
+        
         if selected_customer:
-            demo_row = sales_data[sales_data['Customer'] == selected_customer].iloc[0]
-            demo_industry = demo_row['Region']  # map Region to Industry
-            demo_goals = f"Previous Orders: {demo_row['Product']} x {demo_row['Quantity']}, Total: {demo_row['Total']}"
+            demo_row = sales_data[sales_data['CUSTOMERNAME'] == selected_customer].iloc[0]
+            demo_industry = demo_row['REGION']  # map Region to Industry
+            demo_goals = f"Previous Orders: {demo_row['PRODUCT']} x {demo_row['QUANTITY']}, Total: {demo_row['TOTAL']}"
     else:
         st.warning("Unable to load demo dataset.")
         selected_customer = demo_industry = demo_goals = ""
