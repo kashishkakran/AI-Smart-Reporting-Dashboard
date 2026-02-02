@@ -41,7 +41,7 @@ conn.commit()
 # load kaggle sample dataset
 st.markdown("### Demo Sales Dataset")
 try:
-    url = "https://raw.githubusercontent.com/kashishkakran/AI-Smart-Reporting-Dashboard/main/data/sales_data_sample.csv"
+    url = "https://raw.githubusercontent.com/kashishkakran/AI-Smart-Reporting-Dashboard/main/sales_data_sample.csv"
     response = requests.get(url)
     if response.status_code == 200:
         sales_data = pd.read_csv(StringIO(response.text))
